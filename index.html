@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Pastel Glass Studio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- 1. การตั้งค่าพื้นฐาน (Global Styles) --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Kanit', sans-serif; /* ใช้ฟอนต์ Kanit */
+        }
+
+        body {
+            /* พื้นหลัง Gradient สีพาสเทลฟุ้งๆ */
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            background-image: linear-gradient(135deg, #ffc3a0 0%, #ffafbd 50%, #c9ffbf 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #4a4a4a;
+        }
+
+        /* --- 2. กฎเหล็ก: ห้ามมีมุมเหลี่ยม! (CSS Variables สำหรับ Border-radius) --- */
+        :root {
+            --radius-extreme: 40px; /* ความโค้งมนขั้นสุด */
+            --radius-pill: 50px;    /* ทรงแคปซูล */
+            --radius-card: 25px;    /* การ์ดใบเล็ก */
+        }
+
+        /* --- 3. กรอบหน้าต่างหลัก (Main Container - ปกสมุดโน้ต) --- */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.35); /* โปร่งแสง */
+            backdrop-filter: blur(15px);        /* เบลอฉากหลัง (Glassmorphism) */
+            border-radius: var(--radius-extreme); /* โค้งมนขั้นสุด */
+            border: 1px solid rgba(255, 255, 255, 0.6); /* ขอบขาวบางๆ */
+            box-shadow: 0 15px 35px 0 rgba(0, 0, 0, 0.1); /* เงาบางๆ */
+            width: 100%;
+            max-width: 480px; /* กำหนดความกว้างตามภาพวาด */
+            padding: 30px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* --- 4. แถบเมนูด้านบน (Top Navigation - 4 แท็บ) --- */
+        .nav-tabs {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: var(--radius-pill); /* ทรงแคปซูล (ไม่ใช่ทรงกลม) */
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(5px);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: #555;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        /* สไตล์สีพาสเทลโปร่งแสงสำหรับแต่ละแท็บ */
+        .tab-home { background: rgba(255, 182, 193, 0.4); } /* ชมพู */
+        .tab-rules { background: rgba(173, 216, 230, 0.4); } /* ฟ้า */
+        .tab-services { background: rgba(144, 238, 144, 0.4); } /* เขียว */
+        .tab-payment { background: rgba(255, 255, 224, 0.5); } /* เหลือง */
+
+        /* เอฟเฟกต์เมื่อ hover หรือ active: แสงเรืองรองและเด้งขึ้น */
+        .tab-btn:hover, .tab-btn.active {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(255,255,255,0.3);
+            border-color: #fff;
+            color: #333;
+        }
+
+        /* --- 5. หน้าต่างโชว์รูปหลัก (Hero Window - เจาะช่องบนปกสมุด) --- */
+        .hero-window {
+            background: rgba(255, 255, 255, 0.2); /* โปร่งแสงกว่ากรอบหลัก */
+            border-radius: var(--radius-extreme);  /* โค้งมนขั้นสุด */
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            height: 180px; /* ความสูงของช่องหน้าต่าง */
+            box-shadow: inset 0 4px 15px rgba(0,0,0,0.05); /* เงาตกกระทบด้านใน */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+            transition: 0.3s ease;
+        }
+        
+        .hero-window i {
+            font-size: 60px;
+            color: rgba(255, 182, 193, 0.8); /* สีไอคอนเริ่มต้น */
+            transition: 0.3s ease;
+        }
+
+        /* --- 6. พื้นที่แสดงเนื้อหา (Content Area - สลับตามแท็บ) --- */
+        .content-area {
+            position: relative;
+            flex: 1;
+        }
+
+        .tab-content {
+            display: none; /* ซ่อนเนื้อหาเริ่มต้น */
+            animation: smoothFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); /* เอฟเฟกต์ smooth fade-up */
+        }
+
+        .tab-content.active {
+            display: block; /* แสดงเนื้อหาที่เลือก */
+        }
+
+        @keyframes smoothFadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* สไตล์ข้อความทั่วไป */
+        h1, h2 { font-weight: 600; color: #333; margin-bottom: 10px; }
+        h1 { font-size: 20px; text-align: center;}
+        h2 { font-size: 18px; text-align: center;}
+        p { line-height: 1.6; font-size: 15px; margin-bottom: 12px; }
+
+        /* การ์ดกระจกใบเล็กสำหรับบริการ */
+        .service-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .service-card {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: var(--radius-card); /* ขอบโค้งๆ */
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            text-align: center;
+            transition: 0.3s;
+        }
+        .service-card:hover { background: rgba(255, 255, 255, 0.6); transform: scale(1.03); }
+
+        /* ส่วนชำระเงิน */
+        .payment-box {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-card);
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        /* ปุ่มทั้งหมด: ต้องโค้งมน! */
+        .btn {
+            border: none;
+            cursor: pointer;
+            transition: 0.3s ease;
+            font-weight: 500;
+        }
+
+        /* ปุ่มคัดลอกเลขบัญชี */
+        .btn-copy {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #fff;
+            padding: 8px 15px;
+            border-radius: var(--radius-pill); /* โค้งมน */
+            color: #555;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        .btn-copy:hover { background: #fff; transform: translateY(-2px); }
+
+        /* ปุ่ม TrueMoney Wallet: เด่นๆ โค้งๆ */
+        .btn-wallet {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            background: linear-gradient(135deg, #ffb347, #ff7b54); /* ส้มไล่สี */
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--radius-pill); /* โค้งมนเด่นๆ */
+            width: 100%;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(255, 123, 84, 0.3);
+        }
+        .btn-wallet:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(255, 123, 84, 0.4); }
+
+        /* --- 7. ปุ่มโซเชียลด้านล่าง (Bottom Social - ทรงกลมดิ๊ก) --- */
+        .bottom-social {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 20px;
+            border-top: 2px dashed rgba(255, 255, 255, 0.4);
+        }
+
+        .social-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%; /* ทรงกลมดิ๊ก (ไม่ใช่อันอื่น) */
+            background: rgba(255, 255, 255, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.3s ease;
+            color: #666;
+        }
+
+        /* เอฟเฟกต์โซเชียล: แสงเรืองรองและหมุนนิดหน่อย */
+        .social-btn:hover {
+            transform: translateY(-5px) rotate(10deg);
+            background: #fff;
+            box-shadow: 0 8px 20px rgba(255,255,255,0.4);
+        }
+        
+        .social-btn.fb:hover { color: #0984e3; box-shadow: 0 8px 20px rgba(9, 132, 227, 0.3); }
+        .social-btn.dc:hover { color: #6c5ce7; box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3); }
+        .social-btn.line:hover { color: #00b894; box-shadow: 0 8px 20px rgba(0, 184, 148, 0.3); }
+        
+    </style>
+</head>
+<body>
+
+    <div class="glass-container">
+        
+        <nav class="nav-tabs">
+            <button class="tab-btn tab-home active btn" onclick="switchTab('home')"><i class="fa-solid fa-house-chimney-window"></i> หน้าหลัก</button>
+            <button class="tab-btn tab-rules btn" onclick="switchTab('rules')"><i class="fa-solid fa-list-check"></i> กฎ</button>
+            <button class="tab-btn tab-services btn" onclick="switchTab('services')"><i class="fa-solid fa-wand-magic-sparkles"></i> บริการ</button>
+            <button class="tab-btn tab-payment btn" onclick="switchTab('payment')"><i class="fa-solid fa-wallet"></i> ชำระเงิน</button>
+        </nav>
+
+        <div class="hero-window" id="hero-window">
+            <i class="fa-solid fa-cloud-moon"></i> </div>
+
+        <div class="content-area">
+            
+            <div class="tab-content active" id="content-home">
+                <h1>Neon Pastel Glass Studio</h1>
+                <div style="background: rgba(255, 255, 255, 0.3); border-radius: 20px; padding: 15px; border: 1px solid rgba(255, 255, 255, 0.5); margin-bottom: 12px; text-align: center;">
+                    <p style="font-size: 0.9em; color: #555; margin: 0;">"ความโค้งมนคือความสุข" เราคือสตูดิโอเชี่ยวชาญงาน Glassmorphism</p>
+                </div>
+                <div style="text-align: center;">
+                    <p>🕒 เวลาเปิดทำการ:</p>
+                    <p style="color: #6c5ce7; font-weight: 500;">12:00 PM – 04:00 AM</p>
+                    <p style="font-size: 0.85em; color: #777;">(Support สายดึกโดยเฉพาะ!)</p>
+                </div>
+            </div>
+
+            <div class="tab-content" id="content-rules">
+                <h2>How to Order 📜</h2>
+                <div class="payment-box">
+                    <p style="text-align: left; padding-left: 15px;">
+                        1. <strong>เลือก</strong> แพ็กเกจจากหมวด บริการ<br>
+                        2. <strong>ทัก</strong> DM พร้อมแนบ Reference<br>
+                        3. <strong>โอน</strong> ชำระเงินเต็มจำนวน<br>
+                        4. <strong>รอ</strong> รับดราฟแรก (24-48 ชม.)
+                    </p>
+                </div>
+                <div style="background: rgba(255, 182, 193, 0.2); border-radius: 15px; padding: 10px; border: 1px solid rgba(255, 182, 193, 0.4); text-align: center;">
+                    <p style="margin: 0;">⚠️ กฎ: แก้ไขงานฟรี 3 ครั้ง</p>
+                </div>
+            </div>
+
+            <div class="tab-content" id="content-services">
+                <h2>Our Services 🛠️</h2>
+                <div class="service-grid">
+                    <div class="service-card">
+                        <i class="fa-solid fa-droplet" style="font-size: 24px; color: #ffb3ba; margin-bottom: 8px;"></i>
+                        <p style="font-weight: 500;">Landing Page</p>
+                        <p style="font-size: 0.9em; color: #ff7b54;">350.-</p>
+                    </div>
+                    <div class="service-card">
+                        <i class="fa-solid fa-gamepad" style="font-size: 24px; color: #baffc9; margin-bottom: 8px;"></i>
+                        <p style="font-weight: 500;">Account Catalog</p>
+                        <p style="font-size: 0.9em; color: #ff7b54;">500.-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="content-payment">
+                <h2>Payment Center 💳</h2>
+                <div class="payment-box">
+                    <p style="font-size: 0.9em; margin-bottom: 5px;">ธนาคารกสิกรไทย (K-Bank)</p>
+                    <p style="font-size: 1.1em; font-weight: 600;">123-8-88888-0</p>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 8px;">นาย สมมติ รักงานโค้ง</p>
+                    <button class="btn btn-copy" onclick="copyAccount()"><i class="fa-regular fa-copy"></i> คัดลอกเลขบัญชี</button>
+                </div>
+                <button class="btn btn-wallet"><i class="fa-solid fa-bolt"></i> โอนผ่าน Wallet</button>
+            </div>
+
+        </div>
+
+        <footer class="bottom-social">
+            <button class="social-btn fb btn"><i class="fa-brands fa-facebook-f"></i></button>
+            <button class="social-btn dc btn"><i class="fa-brands fa-discord"></i></button>
+            <button class="social-btn line btn"><i class="fa-brands fa-line"></i></button>
+        </footer>
+
+    </div>
+
+    <script>
+        // --- ฟังก์ชัน JavaScript สำหรับสลับแท็บแบบ Smooth ---
+        function switchTab(tabId) {
+            // 1. จัดการปุ่ม Top Nav
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => tab.classList.remove('active')); // เอาคลาส active ออกจากทุกปุ่ม
+            document.querySelector(`.tab-${tabId}`).classList.add('active'); // ใส่ active ให้ปุ่มที่กด
+
+            // 2. จัดการเนื้อหา Content Area
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active')); // ซ่อนเนื้อหาทั้งหมด
+            document.getElementById(`content-${tabId}`).classList.add('active'); // แสดงเนื้อหาแท็บที่กด
+
+            // 3. จัดการไอคอนใน Hero Window ให้เข้ากับแท็บที่กด
+            const heroIcon = document.querySelector('#hero-window i');
+            const heroWindow = document.getElementById('hero-window');
+            
+            heroIcon.className = ''; // ล้างคลาสไอคอนเดิม
+            heroWindow.style.boxShadow = 'inset 0 4px 15px rgba(0,0,0,0.05)'; // ล้างแสงเรืองรองเดิม
+            
+            // เปลี่ยนไอคอนและสีแสงตามแท็บ
+            if (tabId === 'home') {
+                heroIcon.className = 'fa-solid fa-cloud-moon';
+                heroIcon.style.color = 'rgba(255, 182, 193, 0.8)';
+            } else if (tabId === 'rules') {
+                heroIcon.className = 'fa-solid fa-list-check';
+                heroIcon.style.color = 'rgba(173, 216, 230, 0.8)';
+            } else if (tabId === 'services') {
+                heroIcon.className = 'fa-solid fa-wand-magic-sparkles';
+                heroIcon.style.color = 'rgba(144, 238, 144, 0.8)';
+            } else if (tabId === 'payment') {
+                heroIcon.className = 'fa-solid fa-wallet';
+                heroIcon.style.color = 'rgba(255, 255, 224, 0.9)';
+            }
+        }
+
+        // --- ฟังก์ชันคัดลอกเลขบัญชี ---
+        function copyAccount() {
+            const accountNumber = '1238888880'; // เลขบัญชีจริง
+            navigator.clipboard.writeText(accountNumber).then(() => {
+                alert("คัดลอกเลขบัญชี 123-8-88888-0 เรียบร้อยแล้ว 💸"); // แจ้งเตือนเมื่อคัดลอกสำเร็จ
+            });
+        }
+    </script>
+</body>
+</html>
